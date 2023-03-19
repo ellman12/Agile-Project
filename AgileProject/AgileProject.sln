@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgileProject", "AgileProject\AgileProject.csproj", "{2AB3C4DF-B4FB-4302-84BE-8B84BD73DB9A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgileProjectTest", "AgileProjectTest\AgileProjectTest.csproj", "{373CF7C3-70B3-49C2-9F18-35C58F661112}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2AB3C4DF-B4FB-4302-84BE-8B84BD73DB9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2AB3C4DF-B4FB-4302-84BE-8B84BD73DB9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2AB3C4DF-B4FB-4302-84BE-8B84BD73DB9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2AB3C4DF-B4FB-4302-84BE-8B84BD73DB9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{373CF7C3-70B3-49C2-9F18-35C58F661112}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{373CF7C3-70B3-49C2-9F18-35C58F661112}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{373CF7C3-70B3-49C2-9F18-35C58F661112}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{373CF7C3-70B3-49C2-9F18-35C58F661112}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
