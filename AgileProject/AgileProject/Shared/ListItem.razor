@@ -1,0 +1,12 @@
+﻿@* Used for displaying folders and sets. *@
+<link href="css/components/ListItem.css" rel="stylesheet">
+
+<a class="listItem" href="@URL">
+	<span>@Name</span>
+</a>
+
+@code {
+	[Parameter, EditorRequired] public string Name { get; set; } = null!;
+
+	[Parameter, EditorRequired] public string URL { get; set; } = null!;
+}

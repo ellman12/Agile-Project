@@ -1,0 +1,12 @@
+﻿@page "/folders"
+
+<div style="margin-left: 10px;">
+	@foreach (int i in Enumerable.Range(0, 50))
+	{
+		<ListItem Name="@i.ToString()" URL="yes"/>
+	}
+</div>
+
+@code {
+	
+}
