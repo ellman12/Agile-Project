@@ -1,0 +1,59 @@
+<style>
+	* {
+        text-decoration: none;
+    }
+    
+    nav {
+        position: fixed;
+        overflow-y: scroll;
+        user-select: none;
+        scrollbar-width: none; /* Hide scrollbars in Firefox */
+        width: 132px;
+        height: 100%;
+        background-color: #191b1c;
+    }
+    
+    nav::-webkit-scrollbar {
+        display: none; /* Hide scrollbars in Safari and Chrome */
+    }
+    
+    nav > .navLink {
+        padding-left: 10px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 47px;
+        border: none;
+        border-radius: 4px;
+        white-space: nowrap;
+    }
+    
+    nav > .navLink > span + span, nav > .navLink > svg + span {
+        padding-left: 11px;
+    }
+    
+    nav > .navLink:hover {
+        background-color: #36373C;
+        cursor: pointer;
+    }
+    
+    nav > .active {
+        background-color: #585960;
+    }
+    
+    nav > .active:hover {
+        background-color: #6a6b73;
+    }
+    
+    nav > .active > * {
+        /*color: #0080ff;*/
+        /*fill: #0080ff;*/
+    }
+</style>
+
+<nav>
+	<NavLink class="navLink" href="/" Match="NavLinkMatch.All"><span class="material-icons-outlined">home</span><span>Home</span></NavLink>
+	<NavLink class="navLink" href="/folders" Match="NavLinkMatch.All"><span class="material-icons-outlined">folder</span><span>Folders</span></NavLink>
+	<NavLink class="navLink" href="/sets" Match="NavLinkMatch.All"><span class="material-icons-outlined">folder</span><span>Sets</span></NavLink>
+	<NavLink class="navLink" href="/explore" Match="NavLinkMatch.All"><span class="material-icons-outlined">explore</span><span>Explore</span></NavLink>
+</nav>
