@@ -1,0 +1,37 @@
+﻿@* Displays a list of items as ListItems. *@
+@typeparam T
+
+@if (Source.Count == 0)
+{
+	return;
+}
+
+<link href="css/components/ItemList.css" rel="stylesheet"/>
+
+<div class="itemList">
+	@foreach (T item in Source)
+	{
+		//TODO: can't fully do this until these records exist.
+		@* if (typeName == "Folder") *@
+		@* { *@
+		@* 	<ListItem Name="@" URL=""/> *@
+		@* } *@
+		@* else if (typeName == "Set") *@
+		@* { *@
+		@* 	<ListItem Name="@" URL=""/> *@
+		@* } *@
+	}
+</div>
+
+@code {
+
+	[Parameter, EditorRequired] public List<T> Source { get; set; } = null!;
+
+	private string typeName;
+
+	protected override void OnInitialized()
+	{
+		if (Source.Count == 0) return;
+		typeName = Source.First()!.GetType().Name;
+	}
+}
