@@ -1,0 +1,12 @@
+﻿@* Button with just an icon and no text. *@ 
+<link href="css/components/IconButton.css" rel="stylesheet"/>
+
+<button class="iconBtn" @onclick="@OnClick"><span class="material-icons-outlined">@Icon</span></button>
+
+@code {
+
+	[Parameter, EditorRequired] public string Icon { get; set; } = null!;
+	
+	[Parameter, EditorRequired] public Action OnClick { get; set; } = null!;
+
+}
