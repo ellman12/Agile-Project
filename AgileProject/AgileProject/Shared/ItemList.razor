@@ -1,5 +1,5 @@
 ﻿@* Displays a list of items as ListItems. *@
-@typeparam T
+@* @typeparam T *@
 
 @if (Source.Count == 0)
 {
@@ -9,8 +9,10 @@
 <link href="css/components/ItemList.css" rel="stylesheet"/>
 
 <div class="itemList">
-	@foreach (T item in Source)
+	@foreach (Guid item in Source)
 	{
+		<IconButton Icon="check_circle" IconColorHex="@(selectedItems.Contains(item) ? "0000FF" : "FFFFFF")" OnClick="@(() => CheckClicked(item))"/>
+		
 		//TODO: can't fully do this until these records exist.
 		@* if (typeName == "Folder") *@
 		@* { *@
@@ -25,13 +27,31 @@
 
 @code {
 
-	[Parameter, EditorRequired] public List<T> Source { get; set; } = null!;
+	[Parameter, EditorRequired] public List<Guid> Source { get; set; } = null!;
 
 	private string typeName;
 
+	private HashSet<Guid> selectedItems;
+
 	protected override void OnInitialized()
 	{
-		if (Source.Count == 0) return;
-		typeName = Source.First()!.GetType().Name;
+		// if (Source.Count == 0) return;
+		// typeName = Source.First()!.GetType().Name;
+		selectedItems = new HashSet<Guid>();
+
+		Source = new List<Guid> {Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()}; //TODO: this type will actually be passed in and be some record with a uuid field inside...
 	}
+}
+
+@functions {
+
+	private void CheckClicked(Guid uuid)
+	{
+		if (selectedItems.Contains(uuid))
+			selectedItems.Remove(uuid);
+		else
+			selectedItems.Add(uuid);
+		StateHasChanged();
+	}
+
 }
