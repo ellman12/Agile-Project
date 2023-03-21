@@ -1,17 +1,22 @@
 ﻿@* Displays a list of items as ListItems. *@
 @* @typeparam T *@
 
+<link href="css/components/ItemList.css" rel="stylesheet"/>
+
 @if (Source.Count == 0)
 {
 	return;
 }
 
-<link href="css/components/ItemList.css" rel="stylesheet"/>
+<header style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">
+	<IconButton Icon="close" OnClick="@(() => selectedItems.Clear())"/>
+	<span id="selectedAmt">@selectedItems.Count&nbsp;&nbsp;Selected</span>
+</header>
 
 <div class="itemList">
 	@foreach (Guid item in Source)
 	{
-		<IconButton Icon="check_circle" IconColorHex="@(selectedItems.Contains(item) ? "0000FF" : "FFFFFF")" OnClick="@(() => CheckClicked(item))"/>
+		<IconButton Icon="check_circle" IconColorHex="@(selectedItems.Contains(item) ? "0062FF" : "FFFFFF")" OnClick="@(() => CheckClicked(item))"/>
 		
 		//TODO: can't fully do this until these records exist.
 		@* if (typeName == "Folder") *@
