@@ -10,6 +10,7 @@ CREATE TABLE public.users (
     username text UNIQUE NOT NULL,
     first_name text NOT NULL,
     last_name text NOT NULL,
+    email text NOT NULL,
     password text NOT NULL,
     PRIMARY KEY (user_id, username)
 );
