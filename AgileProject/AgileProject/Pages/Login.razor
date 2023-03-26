@@ -1,0 +1,62 @@
+﻿@page "/login"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage Storage
+
+<link href="css/SignUpAndLogin.css" rel="stylesheet"/>
+
+<title>Login - AgileProject</title>
+
+<div id="signUp">
+	<span id="header">Login</span>
+
+	<label for="username">Username</label>
+	<input @bind="@username" type="text" id="username" name="username">
+
+	<label for="password">Password</label>
+	<input @bind="@password" type="password" id="password" name="password">
+
+	<span style="display: @errorDisplay" id="errorSpan">@errorMsg</span>
+	
+	<div>
+		<TextButton OnClick="@TryLogin" Icon="login" Text="Log In"/>
+		<TextButton OnClick="@(() => NavigationManager.NavigateTo("/signup"))" Icon="person_add" Text="Create Account"/>
+	</div>
+</div>
+
+@code {
+
+#nullable disable
+private string username, password, errorMsg, errorDisplay = "none";
+#nullable enable
+
+	private async void TryLogin()
+	{
+		if (String.IsNullOrWhiteSpace(username) || String.IsNullOrWhiteSpace(password))
+		{
+			errorMsg = "All fields must be filled out.";
+			errorDisplay = "block";
+			return;
+		}
+		
+		//TODO: waiting for appropriate backend methods
+		// User? inUser = User.Authenticate(username, password);
+		// if (inUser is null)
+		// {
+		// 	errorMsg = "Invalid credentials";
+		// 	errorDisplay = "block";
+		// }
+		// else
+		// {
+		// 	await Storage.SetAsync("userID", inUser.Uuid);
+		// 	NavigationManager.NavigateTo("/", true);
+		// }
+	}
+
+	protected override async Task OnInitializedAsync()
+	{
+		var result = await Storage.GetAsync<string>("userID");
+		if (!String.IsNullOrWhiteSpace(result.Value))
+			NavigationManager.NavigateTo("/", true);
+	}
+}
