@@ -1,0 +1,18 @@
+﻿@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage Storage
+
+@if (userID == Guid.Empty) { return; }
+
+@code {
+	private Guid userID;
+    
+	protected override async Task OnParametersSetAsync()
+	{
+		ProtectedBrowserStorageResult<string> result = await Storage.GetAsync<string>("userID");
+		if (String.IsNullOrWhiteSpace(result.Value)) 
+			NavigationManager.NavigateTo("/login", true);
+		else
+			userID = Guid.Parse(result.Value);
+	}
+}

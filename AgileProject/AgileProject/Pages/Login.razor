@@ -1,5 +1,6 @@
 ﻿@page "/login"
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using AgileProject.Backend
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage Storage
 
@@ -38,19 +39,18 @@ private string username, password, errorMsg, errorDisplay = "none";
 			errorDisplay = "block";
 			return;
 		}
-		
-		//TODO: waiting for appropriate backend methods
-		// User? inUser = User.Authenticate(username, password);
-		// if (inUser is null)
-		// {
-		// 	errorMsg = "Invalid credentials";
-		// 	errorDisplay = "block";
-		// }
-		// else
-		// {
-		// 	await Storage.SetAsync("userID", inUser.Uuid);
-		// 	NavigationManager.NavigateTo("/", true);
-		// }
+
+		Guid userID = Connection.ValidateUser(username, password);
+		if (userID == Guid.Empty)
+		{
+			errorMsg = "Invalid credentials";
+			errorDisplay = "block";
+		}
+		else
+		{
+			await Storage.SetAsync("userID", userID);
+			NavigationManager.NavigateTo("/", true);
+		}
 	}
 
 	protected override async Task OnInitializedAsync()

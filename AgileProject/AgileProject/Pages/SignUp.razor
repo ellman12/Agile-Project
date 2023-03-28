@@ -1,5 +1,6 @@
 ﻿@page "/signup"
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using AgileProject.Backend
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage Storage
 
@@ -47,20 +48,19 @@
 			errorDisplay = "block";
 			return;
 		}
+
+		Connection.CreateUser(username, password, firstName, lastName, email);
+		Guid newUserID = Connection.ValidateUser(username, password);
 		
-		//TODO: waiting for appropriate backend methods
-		// User? inUser = new User(username, firstName, lastName, email, password);
-		// User? newUser = User.Create(inUser);
-		//
-		// if (newUser is null)
-		// {
-		// 	errorMsg = "Username or email already taken.";
-		// 	errorDisplay = "block";
-		// }
-		// else
-		// {
-		// 	await Storage.SetAsync("userID", newUser.Uuid);
-		// 	NavigationManager.NavigateTo("/", true);
-		// }
+		if (newUserID == Guid.Empty)
+		{
+			errorMsg = "Username or email already taken.";
+			errorDisplay = "block";
+		}
+		else
+		{
+			await Storage.SetAsync("userID", newUserID);
+			NavigationManager.NavigateTo("/", true);
+		}
 	}
 }

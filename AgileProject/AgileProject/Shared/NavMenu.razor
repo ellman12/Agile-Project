@@ -1,3 +1,10 @@
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage Storage
+
+@* For Login and SignUp *@
+@if (userID == Guid.Empty) { return; }
+
 <style>
 	* {
         text-decoration: none;
@@ -57,3 +64,13 @@
 	<NavLink class="navLink" href="/sets" Match="NavLinkMatch.All"><span class="material-icons-outlined">folder</span><span>Sets</span></NavLink>
 	<NavLink class="navLink" href="/explore" Match="NavLinkMatch.All"><span class="material-icons-outlined">explore</span><span>Explore</span></NavLink>
 </nav>
+
+@code {
+    private Guid userID;
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        ProtectedBrowserStorageResult<string> result = await Storage.GetAsync<string>("userID");
+        Guid.TryParse(result.Value, out userID);
+    }
+}
