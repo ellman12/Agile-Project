@@ -1,4 +1,4 @@
-﻿using Npgsql;
+using Npgsql;
 
 namespace AgileProject.Backend;
 
@@ -29,7 +29,7 @@ public class Connection
 		{
 			Open();
 			using NpgsqlCommand cmd = new("Insert INTO users(username, first_name, last_name, email, password) " +
-			                              "Values(@username, @first_name, @last_name, @email, crypt(@password, gen_salt('bf)))");
+			                              "Values(@username, @first_name, @last_name, @email, crypt(@password, gen_salt('bf')))", connection);
 			cmd.Parameters.AddWithValue("@username", username);
 			cmd.Parameters.AddWithValue("@password", password);
 			cmd.Parameters.AddWithValue("@first_name", first_name);
@@ -53,7 +53,7 @@ public class Connection
 		try
 		{
 			Open();
-			using NpgsqlCommand cmd = new("SELECT * FROM users WHERE username = @username and password= crypt(@pass, gen_salt('bf'))");
+			using NpgsqlCommand cmd = new("SELECT * FROM users WHERE username = @username and password = crypt(@password, password)", connection);
 			cmd.Parameters.AddWithValue("@username", username);
 			cmd.Parameters.AddWithValue("@password", pass);
 			cmd.ExecuteNonQuery();
