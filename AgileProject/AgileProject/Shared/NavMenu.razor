@@ -62,7 +62,11 @@
 	<NavLink class="navLink" href="/" Match="NavLinkMatch.All"><span class="material-icons-outlined">home</span><span>Home</span></NavLink>
 	<NavLink class="navLink" href="/folders" Match="NavLinkMatch.All"><span class="material-icons-outlined">folder</span><span>Folders</span></NavLink>
 	<NavLink class="navLink" href="/sets" Match="NavLinkMatch.All"><span class="material-icons-outlined">folder</span><span>Sets</span></NavLink>
-	<NavLink class="navLink" href="/explore" Match="NavLinkMatch.All"><span class="material-icons-outlined">explore</span><span>Explore</span></NavLink>
+    <NavLink class="navLink" href="/explore" Match="NavLinkMatch.All"><span class="material-icons-outlined">explore</span><span>Explore</span></NavLink>
+    
+    <div class="navLink" @onclick="@Logout">
+        <span class="material-icons-outlined">logout</span><span>Logout</span>
+    </div>
 </nav>
 
 @code {
@@ -72,5 +76,11 @@
     {
         ProtectedBrowserStorageResult<string> result = await Storage.GetAsync<string>("userID");
         Guid.TryParse(result.Value, out userID);
+    }
+
+    private async void Logout()
+    {
+        await Storage.DeleteAsync("userID");
+        NavigationManager.NavigateTo("/login", true);
     }
 }
