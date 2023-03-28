@@ -1,11 +1,11 @@
 ﻿
 using Npgsql;
-namespace AgileProject.Backend
-{
+namespace AgileProject.Backend;
+
     public class Connection
     {
         
-        private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=cis424; Database=DatabaseInit";
+        private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=cis424; Database=AgileProject";
         public static readonly NpgsqlConnection connection = new(CONNECTION_STRING);
 
         public static void Open()
@@ -34,12 +34,20 @@ namespace AgileProject.Backend
             {
                 Open();
                 using NpgsqlCommand cmd = new("Insert INTO users(username, first_name, last_name, email, password) " +
-                    "Values(@username, @lastname, @email, crypt(@password, gen_salt('bf)))");
+                    "Values(@username, @first_name, @last_name, @email, crypt(@password, gen_salt('bf)))");
+                cmd.Parameters.AddWithValue("@username", username);
+                cmd.Parameters.AddWithValue("@password", password);
+                cmd.Parameters.AddWithValue("@first_name", first_name);
+                cmd.Parameters.AddWithValue("@last_name", last_name);
+                cmd.Parameters.AddWithValue("@email", email);
+                
+
+
                 cmd.ExecuteNonQuery();
             }
             catch(NpgsqlException e) 
             {
-                Console.WriteLine("Error in createUser: {e.Message}");
+                Console.WriteLine($"Error in createUser: {e.Message}");
             }
             finally
             {
@@ -70,22 +78,20 @@ namespace AgileProject.Backend
             catch(NpgsqlException e)
             {
 
-                Console.WriteLine("Error in ValidateUser: {e.Message}");
+                Console.WriteLine($"Error in ValidateUser: {e.Message}");
                 return Guid.Empty;
             }
             finally
             {
                 Close();
             }
-            
-
-
-
         }
 
 
 
 
 
-    }
+
+
+    
 }
