@@ -1,0 +1,66 @@
+﻿@page "/signup"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@using AgileProject.Backend
+@inject NavigationManager NavigationManager
+@inject ProtectedLocalStorage Storage
+
+<link href="css/SignUpAndLogin.css" rel="stylesheet"/>
+
+<title>Sign Up - AgileProject</title>
+
+<div id="signUp">
+	<span id="header">Create Account</span>
+
+	<label for="firstName">First name</label>
+	<input @bind="@firstName" type="text" id="firstName" name="firstName">
+
+	<label for="lastName">Last name</label>
+	<input @bind="@lastName" type="text" id="lastName" name="lastName">
+
+	<label for="username">Username</label>
+	<input @bind="@username" type="text" id="username" name="username">
+
+	<label for="email">Email</label>
+	<input @bind="@email" type="email" id="email" name="email">
+
+	<label for="password">Password</label>
+	<input @bind="@password" type="password" id="password" name="password">
+
+	<span style="display: @errorDisplay" id="errorSpan">@errorMsg</span>
+
+	<div>
+		<TextButton OnClick="@TryCreateAccount" Icon="person_add" Text="Create Account"/>
+		<TextButton OnClick="@(() => NavigationManager.NavigateTo("/login"))" Icon="login" Text="Log In"/>
+    </div>
+</div>
+
+@code {
+
+	#nullable disable
+	private string username, firstName, lastName, email, password, errorMsg, errorDisplay = "none";
+	#nullable enable
+
+	private async void TryCreateAccount()
+	{
+		if (String.IsNullOrWhiteSpace(username) || String.IsNullOrWhiteSpace(firstName) || String.IsNullOrWhiteSpace(lastName) || String.IsNullOrWhiteSpace(email) || String.IsNullOrWhiteSpace(password))
+		{
+			errorMsg = "All fields must be filled out.";
+			errorDisplay = "block";
+			return;
+		}
+
+		Connection.CreateUser(username, password, firstName, lastName, email);
+		Guid newUserID = Connection.ValidateUser(username, password);
+		
+		if (newUserID == Guid.Empty)
+		{
+			errorMsg = "Username or email already taken.";
+			errorDisplay = "block";
+		}
+		else
+		{
+			await Storage.SetAsync("userID", newUserID);
+			NavigationManager.NavigateTo("/", true);
+		}
+	}
+}
