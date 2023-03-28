@@ -23,4 +23,10 @@ body {
     margin-left: 132px;
 }
 
+@media (max-width: 500px) {
+    #main {
+        margin-left: 40px;
+    }
+}
+
 svg {fill: white;}

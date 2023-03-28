@@ -1,6 +1,9 @@
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 @inject ProtectedLocalStorage Storage
+
+@if (navMenuWidth == 0) { return;}
 
 @* For Login and SignUp *@
 @if (userID == Guid.Empty) { return; }
@@ -15,13 +18,16 @@
         overflow-y: scroll;
         user-select: none;
         scrollbar-width: none; /* Hide scrollbars in Firefox */
-        width: 132px;
         height: 100%;
         background-color: #191b1c;
     }
     
     nav::-webkit-scrollbar {
         display: none; /* Hide scrollbars in Safari and Chrome */
+    }
+    
+    nav > .iconBtn {
+        display: none;
     }
     
     nav > .navLink {
@@ -56,24 +62,56 @@
         /*color: #0080ff;*/
         /*fill: #0080ff;*/
     }
+    
+    @@media (max-width: 500px) {
+        /* Allows us to make it mobile friendly */
+        nav {
+            z-index: 1;
+            opacity: 100%;
+            outline: white;
+        }
+    
+        nav > .nav-link {
+            margin-top: 40px;
+            margin-bottom: -40px;
+    
+        }
+    
+        nav > hr {
+            margin-top: 40px;
+            margin-bottom: -40px;
+        }
+    
+        nav > .iconBtn {
+            margin-left: -3px;
+            display: flex;
+            border: none;
+        }
+    }
 </style>
 
-<nav>
-	<NavLink class="navLink" href="/" Match="NavLinkMatch.All"><span class="material-icons-outlined">home</span><span>Home</span></NavLink>
-	<NavLink class="navLink" href="/folders" Match="NavLinkMatch.All"><span class="material-icons-outlined">folder</span><span>Folders</span></NavLink>
-	<NavLink class="navLink" href="/sets" Match="NavLinkMatch.All"><span class="material-icons-outlined">folder</span><span>Sets</span></NavLink>
-    <NavLink class="navLink" href="/explore" Match="NavLinkMatch.All"><span class="material-icons-outlined">explore</span><span>Explore</span></NavLink>
+<nav style="width: @($"{navMenuWidth}px")">
+    <IconButton OnClick="@(() => navMenuWidth = navMenuWidth == 45 ? 132 : 45)" Icon="menu"/>
     
+    <NavLink class="navLink" href="/" Match="NavLinkMatch.All"><span class="material-icons-outlined">home</span><span>Home</span></NavLink>
+    <NavLink class="navLink" href="/folders" Match="NavLinkMatch.All"><span class="material-icons-outlined">folder</span><span>Folders</span></NavLink>
+    <NavLink class="navLink" href="/sets" Match="NavLinkMatch.All"><span class="material-icons-outlined">folder</span><span>Sets</span></NavLink>
+    <NavLink class="navLink" href="/explore" Match="NavLinkMatch.All"><span class="material-icons-outlined">explore</span><span>Explore</span></NavLink>
+
     <div class="navLink" @onclick="@Logout">
         <span class="material-icons-outlined">logout</span><span>Logout</span>
     </div>
 </nav>
 
 @code {
+    private int navMenuWidth;
+
     private Guid userID;
     
     protected override async Task OnParametersSetAsync()
     {
+        navMenuWidth = await JSRuntime.InvokeAsync<bool>("isMobile") ? 45 : 132;
+
         ProtectedBrowserStorageResult<string> result = await Storage.GetAsync<string>("userID");
         Guid.TryParse(result.Value, out userID);
     }
