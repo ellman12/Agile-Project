@@ -78,4 +78,88 @@ public class Connection
 			Close();
 		}
 	}
+
+
+    #region GetMethods
+    public static List<Card> GetCardsFromSet(Guid setID)
+	{
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("SELECT question, answer, card_id FROM flashcards WHERE set_id = @set_id", connection);
+            cmd.Parameters.AddWithValue("@set_id", setID);
+            cmd.ExecuteNonQuery();
+            using NpgsqlDataReader r = cmd.ExecuteReader();
+
+			List<Card> cards = new List<Card>();
+
+            while (r.Read()) cards.Add(new Card(r.GetString(0), r.GetString(1), r.GetGuid(3)));
+
+            return cards;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in GetCardsFromSet: {e.Message}");
+            return new List<Card>();
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
+    public static List<Set> GetSetsFromFolder(Guid folderID)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("SELECT name, set_id FROM sets WHERE folder_id = @folder_id", connection);
+            cmd.Parameters.AddWithValue("@folder_id", folderID);
+            cmd.ExecuteNonQuery();
+            using NpgsqlDataReader r = cmd.ExecuteReader();
+
+            List<Set> sets = new List<Set>();
+
+            while (r.Read()) sets.Add(new Set(r.GetString(0), r.GetGuid(1)));
+
+            return sets;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in GetCardsFromSet: {e.Message}");
+            return new List<Set>();
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
+    public static List<Folder> GetFoldersFromUser(Guid userID)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("SELECT name, folder_id FROM folders WHERE user_id = @user_id", connection);
+            cmd.Parameters.AddWithValue("@user_id", userID);
+            cmd.ExecuteNonQuery();
+            using NpgsqlDataReader r = cmd.ExecuteReader();
+
+            List<Folder> sets = new List<Folder>();
+
+            while (r.Read()) sets.Add(new Folder(r.GetString(0), r.GetGuid(1)));
+
+            return sets;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in GetCardsFromSet: {e.Message}");
+            return new List<Folder>();
+        }
+        finally
+        {
+            Close();
+        }
+    }
+    #endregion
 }
