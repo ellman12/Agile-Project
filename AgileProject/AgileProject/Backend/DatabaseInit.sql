@@ -1,5 +1,6 @@
 ﻿-- Run this file to initialize database for first time use.
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; -- Needed for uuid_generate_v1
+CREATE EXTENSION IF NOT EXISTS pgcrypto; -- Needed for gen_salt
 
 DROP DATABASE IF EXISTS "AgileProject";
 CREATE DATABASE "AgileProject" WITH OWNER = postgres ENCODING = 'UTF8' LC_COLLATE = 'English_United States.1252' LC_CTYPE = 'English_United States.1252' TABLESPACE = pg_default CONNECTION LIMIT = -1 IS_TEMPLATE = False;
