@@ -62,6 +62,8 @@ namespace AgileProject.Backend;
             {
                 Open();
                 using NpgsqlCommand cmd = new("SELECT * FROM users WHERE username= @username and password= crypt(@pass, gen_salt('bf'))");
+                cmd.Parameters.AddWithValue("@username", username);
+                cmd.Parameters.AddWithValue("@password", pass);
                 cmd.ExecuteNonQuery();
                 using NpgsqlDataReader r = cmd.ExecuteReader();
                 if (r.HasRows)
