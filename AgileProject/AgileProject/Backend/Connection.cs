@@ -2,7 +2,7 @@ using Npgsql;
 
 namespace AgileProject.Backend;
 
-public class Connection
+public static class Connection
 {
 	private const string CONNECTION_STRING = "Host=localhost; Port=5432; User Id=postgres; Password=cis424; Database=AgileProject";
 	public static readonly NpgsqlConnection connection = new(CONNECTION_STRING);
@@ -78,7 +78,101 @@ public class Connection
 			Close();
 		}
 	}
+    public static void CreateCard(Guid set_id, string question, string answer)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("INSERT INTO flashcards (set_id, question, answer) VALUES (@set_id, @question, @answer)", connection);
+            cmd.Parameters.AddWithValue("@set_id", set_id);
+            cmd.Parameters.AddWithValue("@question", question);
+            cmd.Parameters.AddWithValue("@answer", answer);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in createCard: {e.Message}");
+        }
+        finally
+        {
+            Close();
+        }
 
+    }
+
+    public static void EditCard(Guid set_id, Guid card_id, string question, string answer)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("UPDATE flashcards SET set_id = @set_id, question = @question, answer = @answer WHERE card_id = @card_id", connection);
+            cmd.Parameters.AddWithValue("@set_id", set_id);
+            cmd.Parameters.AddWithValue("@card_id", card_id);
+            cmd.Parameters.AddWithValue("@question", question);
+            cmd.Parameters.AddWithValue("@answer", answer);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in createCard: {e.Message}");
+        }
+        finally
+        {
+            Close();
+        }
+
+
+    }
+
+    //No Folder
+    public static bool CreateSet(Guid user, string name)
+	{
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("INSERT INTO sets (creator, name) VALUES (@user_id, @name)", connection);
+            cmd.Parameters.AddWithValue("@user_id", user);
+            cmd.Parameters.AddWithValue("@name", name);
+            cmd.ExecuteNonQuery();
+            using NpgsqlDataReader r = cmd.ExecuteReader();
+
+            return true;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in GetCardsFromSet: {e.Message}");
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+    }
+    //With Folder
+    public static bool CreateSet(Guid user, string name, Guid folder)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("INSERT INTO sets (creator, name, folder_id) VALUES (@user_id, @name, @folder_id)", connection);
+            cmd.Parameters.AddWithValue("@user_id", user);
+            cmd.Parameters.AddWithValue("@name", name);
+            cmd.Parameters.AddWithValue("@folder_id", folder);
+            cmd.ExecuteNonQuery();
+            using NpgsqlDataReader r = cmd.ExecuteReader();
+
+            return true;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in GetCardsFromSet: {e.Message}");
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+    }
 
     #region GetMethods
     public static List<Card> GetCardsFromSet(Guid setID)
