@@ -1,16 +1,16 @@
 .textBtn {
     background-color: var(--main-bg-color);
-    border: 1px solid white;
-    border-radius: 4px;
+    border: 0.0625em solid white;
+    border-radius: 0.25em;
     display: flex;
     align-items: center;
     font-size: 1rem;
     font-weight: 400;
-    padding: 11px;
+    padding: 0.6875em;
 }
 
 /* Add space to right of textBtn icon (which is either an svg like the trash icon or a span) */
-button * ~ * {padding-left: 11px; text-decoration: none;}
+button * ~ * {padding-left: 0.6875em; text-decoration: none;}
 
 .textBtn:hover {
     background-color: rgba(211, 211, 211, 0.1);

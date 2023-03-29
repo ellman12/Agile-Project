@@ -1,13 +1,13 @@
 .listItem {
     display: flex;
     align-items: center;
-    height: 55px;
+    height: 3.4375em;
     background-color: #34343b;
-    margin-bottom: 10px;
-    margin-right: 10px;
+    margin-bottom: 0.625em;
+    margin-right: 0.625em;
 }
 
 .listItem > span {
-    margin-left: 10px;
-    font-size: 20px;
+    margin-left: 0.625em;
+    font-size: 1.25em;
 }
