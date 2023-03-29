@@ -78,4 +78,56 @@ public class Connection
 			Close();
 		}
 	}
+
+	public static void CreateCard(Guid set_id, string question, string answer )
+	{
+		try
+		{
+			Open();
+			using NpgsqlCommand cmd = new("INSERT INTO flashcards (set_id, question, answer) VALUES (@set_id, @question, @answer)", connection);
+			cmd.Parameters.AddWithValue("@set_id", set_id);
+			cmd.Parameters.AddWithValue("@question", question);
+			cmd.Parameters.AddWithValue("@answer", answer);
+			cmd.ExecuteNonQuery();
+		}
+		catch(NpgsqlException e) 
+		{
+			Console.WriteLine($"Error in createCard: {e.Message}");
+		}
+		finally 
+		{
+			Close(); 
+		}
+
+	}
+
+	public static void EditCard(Guid set_id, Guid card_id, string question, string answer)
+	{
+		try
+		{
+			Open();
+			using NpgsqlCommand cmd = new("UPDATE flashcards SET set_id = @set_id, question = @question, answer = @answer WHERE card_id = @card_id", connection);
+			cmd.Parameters.AddWithValue("@set_id", set_id);
+			cmd.Parameters.AddWithValue("@card_id", card_id);
+			cmd.Parameters.AddWithValue("@question", question);
+			cmd.Parameters.AddWithValue("@answer", answer);
+			cmd.ExecuteNonQuery();
+		}
+		catch( NpgsqlException e)
+		{
+			Console.WriteLine($"Error in createCard: {e.Message}");
+		}
+		finally
+		{
+			Close();
+		}
+
+
+	}
+
+
+
+
+
+
 }
