@@ -79,13 +79,13 @@ public class Connection
 		}
 	}
 
-	public static void createCard(Guid set_id, Guid card_id, string question, string answer )
+	public static void CreateCard(Guid set_id, string question, string answer )
 	{
 		try
 		{
+			Open();
 			using NpgsqlCommand cmd = new("INSERT INTO flashcards (set_id, question, answer) VALUES (@set_id, @question, @answer)", connection);
 			cmd.Parameters.AddWithValue("@set_id", set_id);
-			cmd.Parameters.AddWithValue("@card_id", card_id);
 			cmd.Parameters.AddWithValue("@question", question);
 			cmd.Parameters.AddWithValue("@answer", answer);
 			cmd.ExecuteNonQuery();
@@ -101,10 +101,11 @@ public class Connection
 
 	}
 
-	public static void editCard(Guid set_id,Guid card_id, string question, string answer)
+	public static void EditCard(Guid set_id, Guid card_id, string question, string answer)
 	{
 		try
 		{
+			Open();
 			using NpgsqlCommand cmd = new("UPDATE flashcards SET set_id = @set_id, question = @question, answer = @answer WHERE card_id = @card_id", connection);
 			cmd.Parameters.AddWithValue("@set_id", set_id);
 			cmd.Parameters.AddWithValue("@card_id", card_id);
