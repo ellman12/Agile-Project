@@ -1,4 +1,6 @@
-﻿namespace AgileProjectTest;
+﻿using AgileProject.Backend;
+
+namespace AgileProjectTest;
 
 [TestFixture]
 public class AgileTest
@@ -7,5 +9,6 @@ public class AgileTest
 	public void HelloWorld()
 	{
 		Console.WriteLine("hi");
+		Folder f;
 	}
 }
