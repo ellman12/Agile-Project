@@ -120,8 +120,6 @@ public static class Connection
         {
             Close();
         }
-
-
     }
 
     //No Folder
@@ -134,7 +132,7 @@ public static class Connection
             cmd.Parameters.AddWithValue("@user_id", user);
             cmd.Parameters.AddWithValue("@name", name);
             cmd.ExecuteNonQuery();
-            using NpgsqlDataReader r = cmd.ExecuteReader();
+            cmd.ExecuteReader();
 
             return true;
         }
@@ -159,7 +157,7 @@ public static class Connection
             cmd.Parameters.AddWithValue("@name", name);
             cmd.Parameters.AddWithValue("@folder_id", folder);
             cmd.ExecuteNonQuery();
-            using NpgsqlDataReader r = cmd.ExecuteReader();
+            cmd.ExecuteReader();
 
             return true;
         }
