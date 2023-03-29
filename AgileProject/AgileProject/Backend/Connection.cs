@@ -132,7 +132,6 @@ public static class Connection
             cmd.Parameters.AddWithValue("@user_id", user);
             cmd.Parameters.AddWithValue("@name", name);
             cmd.ExecuteNonQuery();
-            cmd.ExecuteReader();
 
             return true;
         }
@@ -157,7 +156,29 @@ public static class Connection
             cmd.Parameters.AddWithValue("@name", name);
             cmd.Parameters.AddWithValue("@folder_id", folder);
             cmd.ExecuteNonQuery();
-            cmd.ExecuteReader();
+
+            return true;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in GetCardsFromSet: {e.Message}");
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
+    public static bool CreateFolder(Guid user, string name)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("INSERT INTO folders (creator, name) VALUES (@user_id, @name)", connection);
+            cmd.Parameters.AddWithValue("@user_id", user);
+            cmd.Parameters.AddWithValue("@name", name);
+            cmd.ExecuteNonQuery();
 
             return true;
         }
