@@ -16,5 +16,13 @@ header > #selectedAmt {
 }
 
 .itemList {
-    
+    width: available;
+    width: -moz-available;
+}
+
+.itemList > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0.625em;
 }
