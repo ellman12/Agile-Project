@@ -91,7 +91,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine($"Error in createCard: {e.Message}");
+            Console.WriteLine($"Error in CreateCard: {e.Message}");
         }
         finally
         {
@@ -114,7 +114,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine($"Error in createCard: {e.Message}");
+            Console.WriteLine($"Error in EditCard: {e.Message}");
         }
         finally
         {
@@ -137,7 +137,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine($"Error in GetCardsFromSet: {e.Message}");
+            Console.WriteLine($"Error in CreateSet-NoFolder: {e.Message}");
             return false;
         }
         finally
@@ -161,7 +161,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine($"Error in GetCardsFromSet: {e.Message}");
+            Console.WriteLine($"Error in CreateSet-Folder: {e.Message}");
             return false;
         }
         finally
@@ -184,7 +184,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine($"Error in GetCardsFromSet: {e.Message}");
+            Console.WriteLine($"Error in CreateFolder: {e.Message}");
             return false;
         }
         finally
@@ -239,7 +239,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine($"Error in GetCardsFromSet: {e.Message}");
+            Console.WriteLine($"Error in GetSetsFromFolder: {e.Message}");
             return new List<Set>();
         }
         finally
@@ -253,7 +253,7 @@ public static class Connection
         try
         {
             Open();
-            using NpgsqlCommand cmd = new("SELECT name, folder_id FROM folders WHERE user_id = @user_id", connection);
+            using NpgsqlCommand cmd = new("SELECT name, folder_id FROM folders WHERE creator = @user_id", connection);
             cmd.Parameters.AddWithValue("@user_id", userID);
             cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
@@ -266,7 +266,7 @@ public static class Connection
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine($"Error in GetCardsFromSet: {e.Message}");
+            Console.WriteLine($"Error in GetFolderFromUser: {e.Message}");
             return new List<Folder>();
         }
         finally
@@ -275,4 +275,75 @@ public static class Connection
         }
     }
     #endregion
+
+    public static bool DeleteFolder(Guid folder)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("DELETE FROM folders where folder_id = @folder_id", connection);
+            cmd.Parameters.AddWithValue("@folder_id", folder);
+            cmd.ExecuteNonQuery();
+            Open();
+            return true;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in DeleteFolder: {e.Message}");
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+
+    }
+
+    public static bool DeleteSet(Guid set)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("DELETE FROM flashcards where set_id = @set_id", connection);
+            cmd.Parameters.AddWithValue("@set_id", set);
+            cmd.ExecuteNonQuery();
+            Open();
+            using NpgsqlCommand cmd2 = new("DELETE FROM sets where set_id = @set_id", connection);
+            cmd2.Parameters.AddWithValue("@set_id", set);
+            cmd2.ExecuteNonQuery();
+            return true;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in DeleteSet: {e.Message}");
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+
+    }
+
+    public static bool DeleteCard(Guid card_id)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("DELETE FROM flashcards where card_id = @card_id", connection);
+            cmd.Parameters.AddWithValue("@card_id", card_id);
+            cmd.ExecuteNonQuery();
+            return true;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in DeleteCard: {e.Message}");
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+
+    }
 }
