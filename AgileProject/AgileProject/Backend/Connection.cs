@@ -206,7 +206,7 @@ public static class Connection
 
 			List<Card> cards = new List<Card>();
 
-            while (r.Read()) cards.Add(new Card(r.GetString(0), r.GetString(1), r.GetGuid(3)));
+            while (r.Read()) cards.Add(new Card(r.GetString(0), r.GetString(1), r.GetGuid(2)));
 
             return cards;
         }
