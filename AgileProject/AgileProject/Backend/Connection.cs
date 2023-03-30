@@ -284,7 +284,6 @@ public static class Connection
             using NpgsqlCommand cmd = new("DELETE FROM folders where folder_id = @folder_id", connection);
             cmd.Parameters.AddWithValue("@folder_id", folder);
             cmd.ExecuteNonQuery();
-            Open();
             return true;
         }
         catch (NpgsqlException e)
@@ -307,7 +306,6 @@ public static class Connection
             using NpgsqlCommand cmd = new("DELETE FROM flashcards where set_id = @set_id", connection);
             cmd.Parameters.AddWithValue("@set_id", set);
             cmd.ExecuteNonQuery();
-            Open();
             using NpgsqlCommand cmd2 = new("DELETE FROM sets where set_id = @set_id", connection);
             cmd2.Parameters.AddWithValue("@set_id", set);
             cmd2.ExecuteNonQuery();
