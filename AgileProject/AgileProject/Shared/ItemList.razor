@@ -1,4 +1,4 @@
-@* Displays a list of items as ListItems. *@
+﻿@* Displays a list of items as ListItems. *@
 @using AgileProject.Backend
 @using System.Diagnostics.CodeAnalysis
 @using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
@@ -25,10 +25,25 @@
 			</div>
 		}
 	}
+	
+	@if (sets?.Count > 0)
+	{
+		foreach (Set s in sets)
+		{
+			<div>
+				<IconButton Icon="check_circle" IconColorHex="@(selectedItems.Contains(s.SetID) ? "0062FF" : "FFFFFF")" OnClick="@(() => CheckClicked(s.SetID))"/>
+				<ListItem Name="@s.Name" URL="@($"set-view/{s.SetID}")"/>
+			</div>
+		}
+	}
 </div>
 
 @code {
 	private List<Folder>? folders;
+
+	[Parameter] public Guid FolderID { get; set; }
+
+	private List<Set>? sets;
 
 	private HashSet<Guid> selectedItems = new();
 
@@ -42,7 +57,8 @@
 
 		if (currentPage == "folders")
 			folders = Connection.GetFoldersFromUser(userID);
-	// else if (currentPage == "sets")
+		else if (currentPage == "folder-view" && FolderID != Guid.Empty)
+			sets = Connection.GetSetsFromFolder(FolderID);
 	}
 
 }

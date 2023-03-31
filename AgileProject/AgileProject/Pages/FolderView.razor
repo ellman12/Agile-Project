@@ -1,0 +1,9 @@
+﻿@page "/folder-view/{FolderID}"
+
+<ItemList FolderID="@Guid.Parse(FolderID)"/>
+
+@code {
+
+	[Parameter] public string FolderID { get; set; }
+
+}
