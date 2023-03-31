@@ -1,0 +1,77 @@
+﻿@* Displays a list of items as ListItems. *@
+@using AgileProject.Backend
+@using System.Diagnostics.CodeAnalysis
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage Storage
+@inject NavigationManager NavigationManager
+
+<AuthChecker/>
+
+<link href="css/components/ItemList.css" rel="stylesheet"/>
+
+<header style="visibility: @(selectedItems.Count > 0 ? "visible" : "hidden")">
+	<IconButton Icon="close" OnClick="@(() => selectedItems.Clear())"/>
+	<span id="selectedAmt">@selectedItems.Count&nbsp;&nbsp;Selected</span>
+</header>
+
+<div class="itemList">
+	@if (folders?.Count > 0)
+	{
+		foreach (Folder f in folders)
+		{
+			<div>
+				<IconButton Icon="check_circle" IconColorHex="@(selectedItems.Contains(f.FolderID) ? "0062FF" : "FFFFFF")" OnClick="@(() => CheckClicked(f.FolderID))"/>
+				<ListItem Name="@f.Name" URL="@($"folder-view/{f.FolderID}")"/>
+			</div>
+		}
+	}
+	
+	@if (sets?.Count > 0)
+	{
+		foreach (Set s in sets)
+		{
+			<div>
+				<IconButton Icon="check_circle" IconColorHex="@(selectedItems.Contains(s.SetID) ? "0062FF" : "FFFFFF")" OnClick="@(() => CheckClicked(s.SetID))"/>
+				<ListItem Name="@s.Name" URL="@($"set-view/{s.SetID}")"/>
+			</div>
+		}
+	}
+</div>
+
+@code {
+	private List<Folder>? folders;
+
+	[Parameter] public Guid FolderID { get; set; }
+
+	private List<Set>? sets;
+
+	private HashSet<Guid> selectedItems = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		ProtectedBrowserStorageResult<string> result = await Storage.GetAsync<string>("userID");
+		Guid userID = String.IsNullOrWhiteSpace(result.Value) ? Guid.Empty : Guid.Parse(result.Value);
+		if (userID == Guid.Empty) return;
+
+		string currentPage = NavigationManager.Uri.Split('/')[3];
+
+		if (currentPage == "folders")
+			folders = Connection.GetFoldersFromUser(userID);
+		else if (currentPage == "folder-view" && FolderID != Guid.Empty)
+			sets = Connection.GetSetsFromFolder(FolderID);
+	}
+
+}
+
+@functions {
+
+	private void CheckClicked(Guid uuid)
+	{
+		if (selectedItems.Contains(uuid))
+			selectedItems.Remove(uuid);
+		else
+			selectedItems.Add(uuid);
+		StateHasChanged();
+	}
+
+}

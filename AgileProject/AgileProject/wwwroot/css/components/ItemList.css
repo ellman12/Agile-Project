@@ -1,0 +1,28 @@
+﻿header {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    background-color: #191b1c;
+    width: 100%;
+    height: 60px;
+}
+
+header > .iconBtn {
+    margin-left: 4px;
+}
+
+header > #selectedAmt {
+    margin-left: 10px;
+}
+
+.itemList {
+    width: available;
+    width: -moz-available;
+}
+
+.itemList > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0.625em;
+}

@@ -3,11 +3,9 @@
     align-items: center;
     height: 3.4375em;
     background-color: #34343b;
-    margin-bottom: 0.625em;
     margin-right: 0.625em;
-}
-
-.listItem > span {
-    margin-left: 0.625em;
+    width: available;
+    width: -moz-available;
+    padding-left: 0.625em;
     font-size: 1.25em;
 }
