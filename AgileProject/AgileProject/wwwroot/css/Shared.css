@@ -1,4 +1,4 @@
-﻿/* This stuff is shared throughout the project */
+/* This stuff is shared throughout the project */
 /* Product Sans is the font throughout the project, and .material-icons is used for every icon from Google's fonts/icons website. */
 
 @font-face {
@@ -20,7 +20,13 @@ body {
 }
 
 #main {
-    margin-left: 132px;
+    margin-left: 8.25em;
+}
+
+@media (max-width: 500px) {
+    #main {
+        margin-left: 40px;
+    }
 }
 
 svg {fill: white;}

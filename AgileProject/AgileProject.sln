@@ -1,5 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32002.261
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgileProject", "AgileProject\AgileProject.csproj", "{2AB3C4DF-B4FB-4302-84BE-8B84BD73DB9A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgileProjectTest", "AgileProjectTest\AgileProjectTest.csproj", "{373CF7C3-70B3-49C2-9F18-35C58F661112}"
@@ -18,5 +21,11 @@ Global
 		{373CF7C3-70B3-49C2-9F18-35C58F661112}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{373CF7C3-70B3-49C2-9F18-35C58F661112}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{373CF7C3-70B3-49C2-9F18-35C58F661112}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FADEA9FE-5565-4AE2-801A-9FBA6A87288D}
 	EndGlobalSection
 EndGlobal

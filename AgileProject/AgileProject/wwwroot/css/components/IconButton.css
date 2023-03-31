@@ -1,8 +1,8 @@
 .iconBtn {
     color: white;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
+    width: 3.125em;
+    height: 3.125em;
     border: none;
     background: none;
     display: flex;
