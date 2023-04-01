@@ -1,4 +1,6 @@
 ﻿@page "/set-view/{SetID}"
+@using Toolbelt.Blazor.HotKeys
+@inject HotKeys HotKeys
 @using AgileProject.Backend
 
 <link href="css/SetViewer.css" rel="stylesheet"/>
@@ -23,12 +25,15 @@
 
 @if (studying)
 {
-	<div id="studyingView" oncontextmenu="event.preventDefault()">
+	<div id="studyingView">
 		<IconButton OnClick="@(() => { studying = false; CardIndex = 0; })" Icon="close"/>
-		<div id="flashcard" @onclick="@CardClick" @oncontextmenu="@CardClick">
+		<div id="flashcard">
 			<span id="topText">@(answerVisible ? "Answer" : "Question")</span>
 			<span>@(answerVisible ? flashcards[CardIndex].Answer : flashcards[CardIndex].Question)</span>
 		</div>
+		
+		<span id="right">Right: @amountRight</span>
+		<span id="wrong">Wrong: @amountWrong</span>
 	</div>
 }
 
@@ -40,8 +45,9 @@
 
 	private List<Card> flashcards = new();
 
+	private HotKeysContext HotKeysContext;
 	private bool studying, answerVisible;
-	private int cardIndex;
+	private int cardIndex, amountWrong, amountRight;
 	private int CardIndex
 	{
 		get => cardIndex;
@@ -57,6 +63,11 @@
 	{
 		parsedID = Guid.Parse(SetID);
 		flashcards = Connection.GetCardsFromSet(parsedID);
+		
+		HotKeysContext = HotKeys.CreateContext();
+		HotKeysContext.Add(ModKeys.None, Keys.Space, FlipCard);
+		HotKeysContext.Add(ModKeys.None, Keys.R, CardRight);
+		HotKeysContext.Add(ModKeys.None, Keys.W, CardWrong);
 	}
 
 	private void CreateFlashcard()
@@ -70,16 +81,26 @@
 		studying = true;
 	}
 
-	private void CardClick(MouseEventArgs mArgs)
+	private void FlipCard()
 	{
-		long btn = mArgs.Button;
-		if (!answerVisible && btn == 0)
-			answerVisible = true;
-		else if (answerVisible && btn == 0)
-			CardIndex++;
-		else if (answerVisible && btn == 2)
-			answerVisible = false;
-		else if (!answerVisible && btn == 2)
-			CardIndex--;
+		if (!studying) return;
+		answerVisible = true;
+		StateHasChanged();
+	}
+
+	private void CardRight()
+	{
+		if (!studying || !answerVisible || CardIndex == flashcards.Count - 1) return;
+		CardIndex++;
+		amountRight++;
+		StateHasChanged();
+	}
+
+	private void CardWrong()
+	{
+		if (!studying || !answerVisible || CardIndex == flashcards.Count - 1) return;
+		CardIndex++;
+		amountWrong++;
+		StateHasChanged();
 	}
 }

@@ -84,3 +84,15 @@
     text-align: justify;
     user-select: none;
 }
+
+#studyingView > #right {
+    position: absolute;
+    bottom: 70px;
+    right: 100px;
+}
+
+#studyingView > #wrong {
+    position: absolute;
+    bottom: 40px;
+    right: 100px;
+}
