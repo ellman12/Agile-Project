@@ -1,0 +1,29 @@
+﻿#cardList {
+    display: flex;
+    flex-direction: column;
+    width: available;
+    width: -moz-available;
+}
+
+#cardList > .card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 3.4375em;
+    background-color: #34343b;
+    width: available;
+    width: -moz-available;
+    margin-left: 0.625em;
+    padding-left: 0.625em;
+    margin-bottom: 0.625em;
+    font-size: 1.25em;
+}
+
+#cardList > .card > span {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    width: 50%;
+    margin-right: 0.625em;
+}

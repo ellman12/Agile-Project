@@ -1,0 +1,32 @@
+﻿@page "/set-view/{SetID}"
+@using AgileProject.Backend
+
+<link href="css/SetViewer.css" rel="stylesheet"/>
+
+<AuthChecker/>
+
+<div id="cardList">
+	@foreach (Card card in flashcards)
+	{
+		<div class="card">
+			<span class="question">@card.Question</span>
+			<span class="answer">@card.Answer</span>
+		</div>
+	}
+</div>
+
+@code {
+	
+	[Parameter] public string SetID { get; set; }
+
+	private Guid parsedID;
+
+	private List<Card> flashcards = new();
+
+	protected override void OnInitialized()
+	{
+		parsedID = Guid.Parse(SetID);
+		flashcards = Connection.GetCardsFromSet(parsedID);
+	}
+
+}
