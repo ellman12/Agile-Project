@@ -36,12 +36,16 @@
 			</div>
 		}
 	}
+
+	<IconButton OnClick="@CreateButtonClick" Icon="add"/>
 </div>
 
 @code {
 	private List<Folder>? folders;
 
 	[Parameter] public Guid FolderID { get; set; }
+
+	private Guid userID;
 
 	private List<Set>? sets;
 
@@ -50,7 +54,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		ProtectedBrowserStorageResult<string> result = await Storage.GetAsync<string>("userID");
-		Guid userID = String.IsNullOrWhiteSpace(result.Value) ? Guid.Empty : Guid.Parse(result.Value);
+		userID = String.IsNullOrWhiteSpace(result.Value) ? Guid.Empty : Guid.Parse(result.Value);
 		if (userID == Guid.Empty) return;
 
 		string currentPage = NavigationManager.Uri.Split('/')[3];
@@ -74,4 +78,17 @@
 		StateHasChanged();
 	}
 
+	private void CreateButtonClick()
+	{
+		if (FolderID != Guid.Empty)
+		{
+			Connection.CreateSet(userID, "New set", FolderID);
+			sets = Connection.GetSetsFromFolder(FolderID);
+		}
+		else
+		{
+			Connection.CreateFolder(userID, "New folder");
+			folders = Connection.GetFoldersFromUser(userID);
+		}
+	}
 }
