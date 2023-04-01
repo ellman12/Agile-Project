@@ -29,7 +29,7 @@
 		<IconButton OnClick="@(() => { studying = false; CardIndex = 0; })" Icon="close"/>
 		<div id="flashcard">
 			<span id="topText">@(answerVisible ? "Answer" : "Question")</span>
-			<span>@(answerVisible ? flashcards[CardIndex].Answer : flashcards[CardIndex].Question)</span>
+			<span>@(answerVisible ? randomized[CardIndex].Answer : randomized[CardIndex].Question)</span>
 		</div>
 		
 		<span id="right">Right: @amountRight</span>
@@ -43,7 +43,7 @@
 
 	private Guid parsedID;
 
-	private List<Card> flashcards = new();
+	private List<Card> flashcards = new(), randomized;
 
 	private HotKeysContext HotKeysContext;
 	private bool studying, answerVisible;
@@ -53,7 +53,7 @@
 		get => cardIndex;
 		set
 		{
-			if (value < 0 || value > flashcards.Count - 1) return;
+			if (value < 0 || value > randomized.Count - 1) return;
 			cardIndex = value;
 			answerVisible = false;
 		}
@@ -79,8 +79,9 @@
 	private void BeginStudying()
 	{
 		studying = true;
+		randomized = flashcards.OrderBy(_ => Random.Shared.Next()).ToList();
 	}
-
+	
 	private void FlipCard()
 	{
 		if (!studying) return;
@@ -90,7 +91,7 @@
 
 	private void CardRight()
 	{
-		if (!studying || !answerVisible || CardIndex == flashcards.Count - 1) return;
+		if (!studying || !answerVisible || CardIndex == randomized.Count - 1) return;
 		CardIndex++;
 		amountRight++;
 		StateHasChanged();
@@ -98,7 +99,7 @@
 
 	private void CardWrong()
 	{
-		if (!studying || !answerVisible || CardIndex == flashcards.Count - 1) return;
+		if (!studying || !answerVisible || CardIndex == randomized.Count - 1) return;
 		CardIndex++;
 		amountWrong++;
 		StateHasChanged();
