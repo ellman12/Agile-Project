@@ -6,11 +6,12 @@
 <AuthChecker/>
 
 <div id="cardList">
-	@foreach (Card card in flashcards)
+	@for (int i = 0; i < flashcards.Count; i++)
 	{
+		int ii = i;
 		<div class="card">
-			<span class="question">@card.Question</span>
-			<span class="answer">@card.Answer</span>
+			<input @onfocusout="@(() => Connection.EditCard(parsedID, flashcards[ii].CardId, flashcards[ii].Question, flashcards[ii].Answer))" type="text" class="question" @bind="@flashcards[ii].Question"/>
+            <input @onfocusout="@(() => Connection.EditCard(parsedID, flashcards[ii].CardId, flashcards[ii].Question, flashcards[ii].Answer))" type="text" class="answer" @bind="@flashcards[ii].Answer"/>
 		</div>
 	}
 </div>
