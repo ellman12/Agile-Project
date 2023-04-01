@@ -16,7 +16,16 @@
 	}
 </div>
 
-<IconButton OnClick="@CreateFlashcard" Icon="add"/>
+<div id="buttons">
+	<IconButton OnClick="@CreateFlashcard" Icon="add"/>
+	<IconButton OnClick="@BeginStudying" Icon="quiz"/>
+</div>
+
+<div id="studyingView">
+	<div id="flashcard">
+		<span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce euismod, velit at viverra aliquet, sapien nisi eleifend dui, in laoreet lacus lorem ac mi. Nulla facilisi. Maecenas quis mi non dolor interdum euismod. Pellentesque pharetra diam vitae tristique pretium. Integer sit amet magna id nisi dictum efficitur. Aenean vel quam vitae est tincidunt viverra. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Aliquam eget ex vitae nulla tincidunt tempor. Donec vel placerat nunc. Vivamus maximus, quam eget eleifend aliquam, odio est tincidunt libero, vel sodales eros augue vitae nibh. Sed ut elit elit. Cras faucibus nec augue sit amet bibendum. Sed laoreet mi a turpis faucibus, vel pulvinar magna congue. Nam id justo eu purus sollicitudin maximus.</span>
+	</div>
+</div>
 
 @code {
 	
@@ -25,6 +34,8 @@
 	private Guid parsedID;
 
 	private List<Card> flashcards = new();
+
+	private bool studying;
 
 	protected override void OnInitialized()
 	{
@@ -36,5 +47,10 @@
 	{
 		flashcards.Add(new Card("Question", "Answer"));
 		Connection.CreateCard(parsedID, "Question", "Answer");
+	}
+
+	private void BeginStudying()
+	{
+		studying = true;
 	}
 }
