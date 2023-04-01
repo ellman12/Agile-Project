@@ -31,3 +31,9 @@
     outline: 1px solid white;
     border-radius: 4px;
 }
+
+.iconBtn {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+}
