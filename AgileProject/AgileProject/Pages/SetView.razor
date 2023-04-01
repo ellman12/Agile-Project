@@ -1,0 +1,40 @@
+﻿@page "/set-view/{SetID}"
+@using AgileProject.Backend
+
+<link href="css/SetViewer.css" rel="stylesheet"/>
+
+<AuthChecker/>
+
+<div id="cardList">
+	@for (int i = 0; i < flashcards.Count; i++)
+	{
+		int ii = i;
+		<div class="card">
+			<input @onfocusout="@(() => Connection.EditCard(parsedID, flashcards[ii].CardId, flashcards[ii].Question, flashcards[ii].Answer))" type="text" class="question" @bind="@flashcards[ii].Question"/>
+			<input @onfocusout="@(() => Connection.EditCard(parsedID, flashcards[ii].CardId, flashcards[ii].Question, flashcards[ii].Answer))" type="text" class="answer" @bind="@flashcards[ii].Answer"/>
+		</div>
+	}
+</div>
+
+<IconButton OnClick="@CreateFlashcard" Icon="add"/>
+
+@code {
+	
+	[Parameter] public string SetID { get; set; }
+
+	private Guid parsedID;
+
+	private List<Card> flashcards = new();
+
+	protected override void OnInitialized()
+	{
+		parsedID = Guid.Parse(SetID);
+		flashcards = Connection.GetCardsFromSet(parsedID);
+	}
+
+	private void CreateFlashcard()
+	{
+		flashcards.Add(new Card("Question", "Answer"));
+		Connection.CreateCard(parsedID, "Question", "Answer");
+	}
+}
