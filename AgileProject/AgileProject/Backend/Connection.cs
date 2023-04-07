@@ -1,4 +1,5 @@
 using Npgsql;
+using System.Xml.Linq;
 
 namespace AgileProject.Backend;
 
@@ -23,7 +24,8 @@ public static class Connection
 		}
 	}
 
-	public static void CreateUser(string username, string password, string first_name, string last_name, string email)
+    #region UserMethods
+    public static void CreateUser(string username, string password, string first_name, string last_name, string email)
 	{
 		try
 		{
@@ -78,6 +80,8 @@ public static class Connection
 			Close();
 		}
 	}
+    #endregion
+    #region CreateMethods
     public static void CreateCard(Guid set_id, string question, string answer)
     {
         try
@@ -100,31 +104,10 @@ public static class Connection
 
     }
 
-    public static void EditCard(Guid set_id, Guid card_id, string question, string answer)
-    {
-        try
-        {
-            Open();
-            using NpgsqlCommand cmd = new("UPDATE flashcards SET set_id = @set_id, question = @question, answer = @answer WHERE card_id = @card_id", connection);
-            cmd.Parameters.AddWithValue("@set_id", set_id);
-            cmd.Parameters.AddWithValue("@card_id", card_id);
-            cmd.Parameters.AddWithValue("@question", question);
-            cmd.Parameters.AddWithValue("@answer", answer);
-            cmd.ExecuteNonQuery();
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine($"Error in EditCard: {e.Message}");
-        }
-        finally
-        {
-            Close();
-        }
-    }
 
     //No Folder
     public static bool CreateSet(Guid user, string name)
-	{
+    {
         try
         {
             Open();
@@ -193,6 +176,133 @@ public static class Connection
         }
     }
 
+    public static bool CopySetFromUser(Guid to_id, Guid from_id, Guid set_id)
+    {
+        try
+        {
+            Set fromSet = (from s in GetSetsFromUser(from_id) where s.SetID == set_id select s).First();
+
+            var fromCards = from c in GetCardsFromSet(from_id) select c;
+
+            CreateSet(to_id, fromSet.Name);
+
+            Set toSet = (from s in GetSetsFromUser(to_id) where s.Name == fromSet.Name select s).First();
+
+            foreach (var card in fromCards)
+            {
+                CreateCard(toSet.SetID, card.Question, card.Answer);
+            }
+
+            return true;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in CopySetFromUser - NoFolder: {e.Message}");
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
+    public static bool CopySetFromUser(Guid to_id, Guid from_id, Guid to_folder_id, Guid set_id)
+    {
+        try
+        {
+            Set fromSet = (from s in GetSetsFromUser(from_id) where s.SetID == set_id select s).First();
+
+            var fromCards = from c in GetCardsFromSet(from_id) select c;
+
+            CreateSet(to_id, fromSet.Name, to_folder_id);
+
+            Set toSet = (from s in GetSetsFromUser(to_id) where s.Name == fromSet.Name select s).First();
+
+            foreach (var card in fromCards)
+            {
+                CreateCard(toSet.SetID, card.Question, card.Answer);
+            }
+
+            return true;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in CopySetFromUser - ToFolder: {e.Message}");
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+    }
+    #endregion
+    #region EditMethods
+    public static void EditCard(Guid set_id, Guid card_id, string question, string answer)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("UPDATE flashcards SET set_id = @set_id, question = @question, answer = @answer WHERE card_id = @card_id", connection);
+            cmd.Parameters.AddWithValue("@set_id", set_id);
+            cmd.Parameters.AddWithValue("@card_id", card_id);
+            cmd.Parameters.AddWithValue("@question", question);
+            cmd.Parameters.AddWithValue("@answer", answer);
+            cmd.ExecuteNonQuery();
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in EditCard: {e.Message}");
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
+    public static bool EditSet(Guid set_id, string name)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("UPDATE sets SET name = @name WHERE set_id = @set_id", connection);
+            cmd.Parameters.AddWithValue("@set_id", set_id);
+            cmd.Parameters.AddWithValue("@name", name);
+            cmd.ExecuteNonQuery();
+            return true;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in EditSet: {e.Message}");
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
+    public static bool EditFolder(Guid folder_id, string name)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("UPDATE folders SET name = @name WHERE folder_id = @folder_id", connection);
+            cmd.Parameters.AddWithValue("@folder_id", folder_id);
+            cmd.Parameters.AddWithValue("@name", name);
+            cmd.ExecuteNonQuery();
+            return true;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in EditFolder: {e.Message}");
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+    }
+    #endregion
     #region GetMethods
     public static List<Card> GetCardsFromSet(Guid setID)
 	{
@@ -248,6 +358,33 @@ public static class Connection
         }
     }
 
+    public static List<Set> GetSetsFromUser(Guid userID)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("SELECT name, set_id FROM sets WHERE creator = @user_id", connection);
+            cmd.Parameters.AddWithValue("@user_id", userID);
+            cmd.ExecuteNonQuery();
+            using NpgsqlDataReader r = cmd.ExecuteReader();
+
+            List<Set> sets = new List<Set>();
+
+            while (r.Read()) sets.Add(new Set(r.GetString(0), r.GetGuid(1)));
+
+            return sets;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in GetSetsFromFolder: {e.Message}");
+            return new List<Set>();
+        }
+        finally
+        {
+            Close();
+        }
+    }
+
     public static List<Folder> GetFoldersFromUser(Guid userID)
     {
         try
@@ -275,6 +412,7 @@ public static class Connection
         }
     }
     #endregion
+    #region DeleteMethods
 
     public static bool DeleteFolder(Guid folder)
     {
@@ -344,4 +482,5 @@ public static class Connection
         }
 
     }
+    #endregion
 }
