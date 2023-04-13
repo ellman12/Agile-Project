@@ -150,8 +150,8 @@ public class AgileTest
 
         Assert.IsTrue(newSet.Count() > 1);
 
-        var Sets1 = from s in Connection.GetSetsFromUser(user1) select s;
-        var Sets2 = from s in Connection.GetSetsFromUser(user2) select s;
+        var Sets1 = from s in Connection.GetSetsFromUser(user1) where s.Name == originalName select s;
+        var Sets2 = from s in Connection.GetSetsFromUser(user2) where s.Name == originalName select s;
 
         foreach(var s in Sets1)
             Assert.IsTrue(Connection.DeleteSet(s.SetID));
