@@ -227,7 +227,10 @@ public static class Connection
             using NpgsqlCommand cmd = new("INSERT INTO sets (name, creator, folder_id) " +
                                           "SELECT name, @user_id, @folder_id FROM sets AS from_set " +
                                           "WHERE set_id = @set_id " +
-                                          "RETURNING set_id", connection);
+                                          "RETURNING set_id; " +
+                                          "INSERT INTO flashcards (set_id, question, answer) " +
+                                          "SELECT @set_id, question, answer FROM flashcards AS from_cards " +
+                                          "WHERE set_id = @set_id", connection);
             cmd.Parameters.AddWithValue("@set_id", set_id);
             cmd.Parameters.AddWithValue("@user_id", toUser_id);
             cmd.Parameters.AddWithValue("@folder_id", folder_id);
