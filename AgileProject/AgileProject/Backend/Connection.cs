@@ -510,4 +510,32 @@ public static class Connection
 
     }
     #endregion
+    
+    public static List<Set> RetrieveSets(Guid userID)
+    {
+        try
+        {
+            Open();
+            using NpgsqlCommand cmd = new("SELECT name, set_id FROM sets WHERE NOT creator = @user_id", connection);
+            cmd.Parameters.AddWithValue("@user_id", userID);
+            cmd.ExecuteNonQuery();
+
+            using NpgsqlDataReader r = cmd.ExecuteReader();
+
+            List<Set> sets = new();
+
+            while (r.Read()) sets.Add(new Set(r.GetString(0), r.GetGuid(1)));
+
+            return sets;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in RetrieveSets: {e.Message}");
+            return null;
+        }
+        finally
+        {
+            Close();
+        }
+    }
 }
