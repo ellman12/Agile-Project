@@ -15,14 +15,39 @@ header > #selectedAmt {
     margin-left: 10px;
 }
 
-.itemList {
+#itemList {
     width: available;
     width: -moz-available;
 }
 
-.itemList > div {
+#itemList > a {
     display: flex;
     flex-direction: row;
     align-items: center;
+    height: 3.4375em;
+    background-color: #34343b;
+    width: available;
+    width: -moz-available;
+    margin-left: 0.625em;
+    padding-left: 0.625em;
     margin-bottom: 0.625em;
+}
+
+#itemList > a > input[type="text"] {
+    background-color: #34343b;
+    border: none;
+    margin-right: 0.625em;
+    font-size: 1.25em;
+}
+
+#itemList > a > input[type="text"]:focus {
+    outline: 1px solid white;
+    border-radius: 4px;
+}
+
+#itemList > .iconBtn {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99999;
 }

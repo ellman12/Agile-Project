@@ -14,34 +14,45 @@
 	<span id="selectedAmt">@selectedItems.Count&nbsp;&nbsp;Selected</span>
 </header>
 
-<div class="itemList">
+<div id="itemList">
 	@if (folders?.Count > 0)
 	{
-		foreach (Folder f in folders)
+		for (int i = 0; i < folders.Count; i++)
 		{
-			<div>
+			int ii = i;
+			Folder f = folders[i];
+
+			<a onclick="location.href='folder-view/@f.FolderID'">
 				<IconButton Icon="check_circle" IconColorHex="@(selectedItems.Contains(f.FolderID) ? "0062FF" : "FFFFFF")" OnClick="@(() => CheckClicked(f.FolderID))"/>
-				<ListItem Name="@f.Name" URL="@($"folder-view/{f.FolderID}")"/>
-			</div>
+            	<input onclick="event.stopPropagation()" @onfocusout="@(() => Connection.EditFolder(f.FolderID, folders[ii].Name))" type="text" @bind="@folders[ii].Name"/>
+            </a>
+			
 		}
 	}
 	
 	@if (sets?.Count > 0)
 	{
-		foreach (Set s in sets)
+		for (int i = 0; i < sets.Count; i++)
 		{
-			<div>
+			int ii = i;
+			Set s = sets[i];
+
+			<a onclick="location.href='set-view/@s.SetID'">
 				<IconButton Icon="check_circle" IconColorHex="@(selectedItems.Contains(s.SetID) ? "0062FF" : "FFFFFF")" OnClick="@(() => CheckClicked(s.SetID))"/>
-				<ListItem Name="@s.Name" URL="@($"set-view/{s.SetID}")"/>
-			</div>
+				<input onclick="event.stopPropagation()" @onfocusout="@(() => Connection.EditSet(s.SetID, sets[ii].Name))" type="text" @bind="@sets[ii].Name"/>
+			</a>
 		}
 	}
+
+	<IconButton OnClick="@CreateButtonClick" Icon="add"/>
 </div>
 
 @code {
 	private List<Folder>? folders;
 
 	[Parameter] public Guid FolderID { get; set; }
+
+	private Guid userID;
 
 	private List<Set>? sets;
 
@@ -50,7 +61,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		ProtectedBrowserStorageResult<string> result = await Storage.GetAsync<string>("userID");
-		Guid userID = String.IsNullOrWhiteSpace(result.Value) ? Guid.Empty : Guid.Parse(result.Value);
+		userID = String.IsNullOrWhiteSpace(result.Value) ? Guid.Empty : Guid.Parse(result.Value);
 		if (userID == Guid.Empty) return;
 
 		string currentPage = NavigationManager.Uri.Split('/')[3];
@@ -74,4 +85,17 @@
 		StateHasChanged();
 	}
 
+	private void CreateButtonClick()
+	{
+		if (FolderID != Guid.Empty)
+		{
+			Connection.CreateSet(userID, "New set", FolderID);
+			sets = Connection.GetSetsFromFolder(FolderID);
+		}
+		else
+		{
+			Connection.CreateFolder(userID, "New folder");
+			folders = Connection.GetFoldersFromUser(userID);
+		}
+	}
 }
