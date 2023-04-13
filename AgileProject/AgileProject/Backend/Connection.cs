@@ -186,27 +186,21 @@ public static class Connection
             using NpgsqlCommand cmd = new("INSERT INTO sets (name, creator) " +
                                           "SELECT name, @user_id FROM sets AS from_set " +
                                           "WHERE set_id = @set_id " +
-                                          "RETURNING set_id", connection);
+                                          "RETURNING set_id; " +
+                                          "INSERT INTO flashcards (set_id, question, answer) " +
+                                          "SELECT @set_id, question, answer FROM flashcards AS from_cards " +
+                                          "WHERE set_id = @set_id", connection);
             cmd.Parameters.AddWithValue("@set_id", set_id);
             cmd.Parameters.AddWithValue("@user_id", toUser_id);
             cmd.ExecuteNonQuery();
             NpgsqlDataReader r = cmd.ExecuteReader();
             r.Read();
             Guid CopiedID = r.GetGuid(0);
-            Close();
 
             if(CopiedID.Equals(Guid.Empty))
             {
                 new Exception();
             }
-
-            List<Card> cards = GetCardsFromSet(CopiedID);
-
-            foreach(Card card in cards)
-            {
-                CreateCard(CopiedID, card.Question, card.Answer);
-            }
-
             return true;
         }
         catch (NpgsqlException e)
