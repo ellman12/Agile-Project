@@ -1,0 +1,98 @@
+﻿#cardList {
+    display: flex;
+    flex-direction: column;
+    width: available;
+    width: -moz-available;
+}
+
+#cardList > .card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 3.4375em;
+    background-color: #34343b;
+    width: available;
+    width: -moz-available;
+    margin-left: 0.625em;
+    padding-left: 0.625em;
+    margin-bottom: 0.625em;
+}
+
+#cardList > .card > input[type="text"] {
+    background-color: #34343b;
+    border: none;
+    width: 50%;
+    margin-right: 0.625em;
+    font-size: 1.25em;
+}
+
+#cardList > .card > input[type="text"]:focus {
+    outline: 1px solid white;
+    border-radius: 4px;
+}
+
+#buttons {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    bottom: 30px;
+    right: 30px;
+}
+
+#buttons > .iconBtn {
+    margin-bottom: 0.625em;
+}
+
+#studyingView {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index: 9999;
+}
+
+#studyingView > .iconBtn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 99999;
+}
+
+#studyingView > #flashcard {
+    background-color: #191b1c;
+    width: 550px;
+    height: 600px;
+    margin: 100px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#studyingView > #flashcard > span {
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: hidden;
+    line-height: 2;
+    font-size: 19px;
+    text-align: justify;
+    user-select: none;
+}
+
+#studyingView > #right {
+    position: absolute;
+    bottom: 70px;
+    right: 100px;
+}
+
+#studyingView > #wrong {
+    position: absolute;
+    bottom: 40px;
+    right: 100px;
+}

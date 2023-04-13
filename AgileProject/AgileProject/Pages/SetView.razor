@@ -1,0 +1,107 @@
+﻿@page "/set-view/{SetID}"
+@using Toolbelt.Blazor.HotKeys
+@inject HotKeys HotKeys
+@using AgileProject.Backend
+
+<link href="css/SetViewer.css" rel="stylesheet"/>
+
+<AuthChecker/>
+
+<div id="cardList">
+	@for (int i = 0; i < flashcards.Count; i++)
+	{
+		int ii = i;
+		<div class="card">
+			<input @onfocusout="@(() => Connection.EditCard(parsedID, flashcards[ii].CardId, flashcards[ii].Question, flashcards[ii].Answer))" type="text" class="question" @bind="@flashcards[ii].Question"/>
+			<input @onfocusout="@(() => Connection.EditCard(parsedID, flashcards[ii].CardId, flashcards[ii].Question, flashcards[ii].Answer))" type="text" class="answer" @bind="@flashcards[ii].Answer"/>
+		</div>
+	}
+</div>
+
+<div id="buttons">
+	<IconButton OnClick="@CreateFlashcard" Icon="add"/>
+	<IconButton OnClick="@BeginStudying" Icon="quiz"/>
+</div>
+
+@if (studying)
+{
+	<div id="studyingView">
+		<IconButton OnClick="@(() => { studying = false; CardIndex = 0; })" Icon="close"/>
+		<div id="flashcard">
+			<span id="topText">@(answerVisible ? "Answer" : "Question")</span>
+			<span>@(answerVisible ? randomized[CardIndex].Answer : randomized[CardIndex].Question)</span>
+		</div>
+		
+		<span id="right">Right: @amountRight</span>
+		<span id="wrong">Wrong: @amountWrong</span>
+	</div>
+}
+
+@code {
+	
+	[Parameter] public string SetID { get; set; }
+
+	private Guid parsedID;
+
+	private List<Card> flashcards = new(), randomized;
+
+	private HotKeysContext HotKeysContext;
+	private bool studying, answerVisible;
+	private int cardIndex, amountWrong, amountRight;
+	private int CardIndex
+	{
+		get => cardIndex;
+		set
+		{
+			if (value < 0 || value > randomized.Count - 1) return;
+			cardIndex = value;
+			answerVisible = false;
+		}
+	}
+
+	protected override void OnInitialized()
+	{
+		parsedID = Guid.Parse(SetID);
+		flashcards = Connection.GetCardsFromSet(parsedID);
+		
+		HotKeysContext = HotKeys.CreateContext();
+		HotKeysContext.Add(ModKeys.None, Keys.Space, FlipCard);
+		HotKeysContext.Add(ModKeys.None, Keys.R, CardRight);
+		HotKeysContext.Add(ModKeys.None, Keys.W, CardWrong);
+	}
+
+	private void CreateFlashcard()
+	{
+		flashcards.Add(new Card("Question", "Answer"));
+		Connection.CreateCard(parsedID, "Question", "Answer");
+	}
+
+	private void BeginStudying()
+	{
+		studying = true;
+		randomized = flashcards.OrderBy(_ => Random.Shared.Next()).ToList();
+	}
+	
+	private void FlipCard()
+	{
+		if (!studying) return;
+		answerVisible = true;
+		StateHasChanged();
+	}
+
+	private void CardRight()
+	{
+		if (!studying || !answerVisible || CardIndex == randomized.Count - 1) return;
+		CardIndex++;
+		amountRight++;
+		StateHasChanged();
+	}
+
+	private void CardWrong()
+	{
+		if (!studying || !answerVisible || CardIndex == randomized.Count - 1) return;
+		CardIndex++;
+		amountWrong++;
+		StateHasChanged();
+	}
+}
