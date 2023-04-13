@@ -128,4 +128,10 @@ public class AgileTest
 
         Assert.IsTrue(Connection.DeleteSet(set.SetID));
     }
+
+    [Test]
+    public void SetCopyTest()
+    {
+
+    }
 }

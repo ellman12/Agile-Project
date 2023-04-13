@@ -1,3 +1,4 @@
+using AgileProject.Pages;
 using Npgsql;
 using System.Xml.Linq;
 
@@ -176,53 +177,46 @@ public static class Connection
         }
     }
 
-    public static bool CopySetFromUser(Guid to_id, Guid from_id, Guid set_id)
+    public static bool CopySetFromUser(Guid toUser_id, Guid set_id)
     {
         try
         {
-            Set fromSet = (from s in GetSetsFromUser(from_id) where s.SetID == set_id select s).First();
+            Open();
+            NpgsqlCommand cmd = new("SELECT name, set_id FROM sets WHERE set_id = @set_id", connection);
+            cmd.Parameters.AddWithValue("@set_id", set_id);
+            cmd.ExecuteNonQuery();
+            NpgsqlDataReader r = cmd.ExecuteReader();
 
-            var fromCards = from c in GetCardsFromSet(from_id) select c;
+            r.Read();
 
-            CreateSet(to_id, fromSet.Name);
+            Set toCopy = new Set(r.GetString(0), r.GetGuid(1));
 
-            Set toSet = (from s in GetSetsFromUser(to_id) where s.Name == fromSet.Name select s).First();
+            cmd = new("SELECT question, answer, card_id FROM flashcards WHERE set_id = @set_id", connection);
+            cmd.Parameters.AddWithValue("@set_id", set_id);
+            cmd.ExecuteNonQuery();
+            r = cmd.ExecuteReader();
 
-            foreach (var card in fromCards)
+            List<Card> list = new List<Card>();
+            while(r.Read())
             {
-                CreateCard(toSet.SetID, card.Question, card.Answer);
+                list.Add(new Card(r.GetString(0), r.GetString(1)));
             }
 
-            return true;
-        }
-        catch (NpgsqlException e)
-        {
-            Console.WriteLine($"Error in CopySetFromUser - NoFolder: {e.Message}");
-            return false;
-        }
-        finally
-        {
-            Close();
-        }
-    }
+            cmd = new("INSERT INTO sets (creator, name, set_id) VALUES (@user_id, @name, @set_id)", connection);
+            cmd.Parameters.AddWithValue("@user_id", toUser_id);
+            cmd.Parameters.AddWithValue("@name", toCopy.Name);
+            cmd.Parameters.AddWithValue("@set_id", toCopy.SetID);
+            cmd.ExecuteNonQuery();
 
-    public static bool CopySetFromUser(Guid to_id, Guid from_id, Guid to_folder_id, Guid set_id)
-    {
-        try
-        {
-            Set fromSet = (from s in GetSetsFromUser(from_id) where s.SetID == set_id select s).First();
-
-            var fromCards = from c in GetCardsFromSet(from_id) select c;
-
-            CreateSet(to_id, fromSet.Name, to_folder_id);
-
-            Set toSet = (from s in GetSetsFromUser(to_id) where s.Name == fromSet.Name select s).First();
-
-            foreach (var card in fromCards)
+            foreach(Card card in list)
             {
-                CreateCard(toSet.SetID, card.Question, card.Answer);
+                cmd = new("INSERT INTO flashcards (set_id, question, answer) VALUES (@set_id, @question, @answer)", connection);
+                cmd.Parameters.AddWithValue("@set_id", toCopy.SetID);
+                cmd.Parameters.AddWithValue("@question", card.Question);
+                cmd.Parameters.AddWithValue("@answer", card.Answer);
+                cmd.ExecuteNonQuery();
             }
-
+            
             return true;
         }
         catch (NpgsqlException e)
