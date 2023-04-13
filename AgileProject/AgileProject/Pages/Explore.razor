@@ -13,7 +13,7 @@
 	@foreach (Set s in sets)
 	{
 		<div>
-			<IconButton Icon="add" OnClick="@(() => Connection.CopySetFromUser(userID, s.SetID, Connection.GetFoldersFromUser(userID).First(f => f.Name == "Uncategorized").FolderID))"/>
+			<IconButton Icon="add" OnClick="@(() => Connection.CopySetFromSetID(userID, s.SetID, Connection.GetFoldersFromUser(userID).First(f => f.Name == "Uncategorized").FolderID))"/>
 			<span>@s.Name</span>
 		</div>
 	}

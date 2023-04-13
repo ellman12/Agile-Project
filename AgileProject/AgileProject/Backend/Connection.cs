@@ -130,15 +130,15 @@ public static class Connection
         }
     }
     //With Folder
-    public static bool CreateSet(Guid user, string name, Guid folder)
+    public static bool CreateSet(Guid user_id, string name, Guid folder_id)
     {
         try
         {
             Open();
             using NpgsqlCommand cmd = new("INSERT INTO sets (creator, name, folder_id) VALUES (@user_id, @name, @folder_id)", connection);
-            cmd.Parameters.AddWithValue("@user_id", user);
+            cmd.Parameters.AddWithValue("@user_id", user_id);
             cmd.Parameters.AddWithValue("@name", name);
-            cmd.Parameters.AddWithValue("@folder_id", folder);
+            cmd.Parameters.AddWithValue("@folder_id", folder_id);
             cmd.ExecuteNonQuery();
 
             return true;
@@ -154,13 +154,13 @@ public static class Connection
         }
     }
 
-    public static bool CreateFolder(Guid user, string name)
+    public static bool CreateFolder(Guid user_id, string name)
     {
         try
         {
             Open();
             using NpgsqlCommand cmd = new("INSERT INTO folders (creator, name) VALUES (@user_id, @name)", connection);
-            cmd.Parameters.AddWithValue("@user_id", user);
+            cmd.Parameters.AddWithValue("@user_id", user_id);
             cmd.Parameters.AddWithValue("@name", name);
             cmd.ExecuteNonQuery();
 
@@ -177,7 +177,7 @@ public static class Connection
         }
     }
 
-    public static bool CopySetFromUser(Guid toUser_id, Guid set_id)
+    public static bool CopySetFromSetID(Guid to_user_id, Guid from_set_id)
     {
         try
         {
@@ -190,8 +190,8 @@ public static class Connection
                                           "INSERT INTO flashcards (set_id, question, answer) " +
                                           "SELECT @set_id, question, answer FROM flashcards AS from_cards " +
                                           "WHERE set_id = @set_id", connection);
-            cmd.Parameters.AddWithValue("@set_id", set_id);
-            cmd.Parameters.AddWithValue("@user_id", toUser_id);
+            cmd.Parameters.AddWithValue("@set_id", from_set_id);
+            cmd.Parameters.AddWithValue("@user_id", to_user_id);
             cmd.ExecuteNonQuery();
             NpgsqlDataReader r = cmd.ExecuteReader();
             r.Read();
@@ -218,7 +218,7 @@ public static class Connection
             Close();
         }
     }
-    public static bool CopySetFromUser(Guid toUser_id, Guid set_id, Guid folder_id)
+    public static bool CopySetFromSetID(Guid to_user_id, Guid from_set_id, Guid to_folder_id)
     {
         try
         {
@@ -231,9 +231,9 @@ public static class Connection
                                           "INSERT INTO flashcards (set_id, question, answer) " +
                                           "SELECT @set_id, question, answer FROM flashcards AS from_cards " +
                                           "WHERE set_id = @set_id", connection);
-            cmd.Parameters.AddWithValue("@set_id", set_id);
-            cmd.Parameters.AddWithValue("@user_id", toUser_id);
-            cmd.Parameters.AddWithValue("@folder_id", folder_id);
+            cmd.Parameters.AddWithValue("@set_id", from_set_id);
+            cmd.Parameters.AddWithValue("@user_id", to_user_id);
+            cmd.Parameters.AddWithValue("@folder_id", to_folder_id);
             cmd.ExecuteNonQuery();
             NpgsqlDataReader r = cmd.ExecuteReader();
             r.Read();
@@ -331,13 +331,13 @@ public static class Connection
     }
     #endregion
     #region GetMethods
-    public static List<Card> GetCardsFromSet(Guid setID)
+    public static List<Card> GetCardsFromSet(Guid set_id)
 	{
         try
         {
             Open();
             using NpgsqlCommand cmd = new("SELECT question, answer, card_id FROM flashcards WHERE set_id = @set_id", connection);
-            cmd.Parameters.AddWithValue("@set_id", setID);
+            cmd.Parameters.AddWithValue("@set_id", set_id);
             cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
 
@@ -358,13 +358,13 @@ public static class Connection
         }
     }
 
-    public static List<Set> GetSetsFromFolder(Guid folderID)
+    public static List<Set> GetSetsFromFolder(Guid folder_id)
     {
         try
         {
             Open();
             using NpgsqlCommand cmd = new("SELECT name, set_id FROM sets WHERE folder_id = @folder_id", connection);
-            cmd.Parameters.AddWithValue("@folder_id", folderID);
+            cmd.Parameters.AddWithValue("@folder_id", folder_id);
             cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
 
@@ -385,13 +385,13 @@ public static class Connection
         }
     }
 
-    public static List<Set> GetSetsFromUser(Guid userID)
+    public static List<Set> GetSetsFromUser(Guid user_id)
     {
         try
         {
             Open();
             using NpgsqlCommand cmd = new("SELECT name, set_id FROM sets WHERE creator = @user_id", connection);
-            cmd.Parameters.AddWithValue("@user_id", userID);
+            cmd.Parameters.AddWithValue("@user_id", user_id);
             cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
 
@@ -412,13 +412,13 @@ public static class Connection
         }
     }
 
-    public static List<Folder> GetFoldersFromUser(Guid userID)
+    public static List<Folder> GetFoldersFromUser(Guid user_id)
     {
         try
         {
             Open();
             using NpgsqlCommand cmd = new("SELECT name, folder_id FROM folders WHERE creator = @user_id", connection);
-            cmd.Parameters.AddWithValue("@user_id", userID);
+            cmd.Parameters.AddWithValue("@user_id", user_id);
             cmd.ExecuteNonQuery();
             using NpgsqlDataReader r = cmd.ExecuteReader();
 
@@ -441,13 +441,13 @@ public static class Connection
     #endregion
     #region DeleteMethods
 
-    public static bool DeleteFolder(Guid folder)
+    public static bool DeleteFolder(Guid folder_id)
     {
         try
         {
             Open();
             using NpgsqlCommand cmd = new("DELETE FROM folders where folder_id = @folder_id", connection);
-            cmd.Parameters.AddWithValue("@folder_id", folder);
+            cmd.Parameters.AddWithValue("@folder_id", folder_id);
             cmd.ExecuteNonQuery();
             return true;
         }
@@ -463,16 +463,16 @@ public static class Connection
 
     }
 
-    public static bool DeleteSet(Guid set)
+    public static bool DeleteSet(Guid set_id)
     {
         try
         {
             Open();
             using NpgsqlCommand cmd = new("DELETE FROM flashcards where set_id = @set_id", connection);
-            cmd.Parameters.AddWithValue("@set_id", set);
+            cmd.Parameters.AddWithValue("@set_id", set_id);
             cmd.ExecuteNonQuery();
             using NpgsqlCommand cmd2 = new("DELETE FROM sets where set_id = @set_id", connection);
-            cmd2.Parameters.AddWithValue("@set_id", set);
+            cmd2.Parameters.AddWithValue("@set_id", set_id);
             cmd2.ExecuteNonQuery();
             return true;
         }
@@ -511,13 +511,13 @@ public static class Connection
     }
     #endregion
     
-    public static List<Set> RetrieveSets(Guid userID)
+    public static List<Set> RetrieveSets(Guid user_id)
     {
         try
         {
             Open();
             using NpgsqlCommand cmd = new("SELECT name, set_id FROM sets WHERE NOT creator = @user_id", connection);
-            cmd.Parameters.AddWithValue("@user_id", userID);
+            cmd.Parameters.AddWithValue("@user_id", user_id);
             cmd.ExecuteNonQuery();
 
             using NpgsqlDataReader r = cmd.ExecuteReader();

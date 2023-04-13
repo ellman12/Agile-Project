@@ -144,7 +144,7 @@ public class AgileTest
 
         Connection.CreateCard(set.SetID, "Copy Q", "Copy A");
 
-        Assert.IsTrue(Connection.CopySetFromUser(user2, set.SetID));
+        Assert.IsTrue(Connection.CopySetFromSetID(user2, set.SetID));
 
         var newSet = from s in Connection.GetSetsFromUser(user2) where s.Name == originalName select s;
 
