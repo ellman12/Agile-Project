@@ -245,13 +245,6 @@ public static class Connection
                 new Exception();
             }
 
-            List<Card> cards = GetCardsFromSet(CopiedID);
-
-            foreach (Card card in cards)
-            {
-                CreateCard(CopiedID, card.Question, card.Answer);
-            }
-
             return true;
         }
         catch (NpgsqlException e)
