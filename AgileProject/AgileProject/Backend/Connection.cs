@@ -182,46 +182,41 @@ public static class Connection
         try
         {
             Open();
-            NpgsqlCommand cmd = new("SELECT name, set_id FROM sets WHERE set_id = @set_id", connection);
+            //using NpgsqlCommand cmd = new("SELECT name FROM sets WHERE set_id = @set_id", connection);
+            using NpgsqlCommand cmd = new("INSERT INTO sets (name, creator) " +
+                                          "SELECT name, @user_id FROM sets AS from_set " +
+                                          "WHERE set_id = @set_id " +
+                                          "RETURNING set_id", connection);
             cmd.Parameters.AddWithValue("@set_id", set_id);
+            cmd.Parameters.AddWithValue("@user_id", toUser_id);
             cmd.ExecuteNonQuery();
             NpgsqlDataReader r = cmd.ExecuteReader();
-
             r.Read();
+            Guid CopiedID = r.GetGuid(0);
+            Close();
 
-            Set toCopy = new Set(r.GetString(0), r.GetGuid(1));
-
-            cmd = new("SELECT question, answer, card_id FROM flashcards WHERE set_id = @set_id", connection);
-            cmd.Parameters.AddWithValue("@set_id", set_id);
-            cmd.ExecuteNonQuery();
-            r = cmd.ExecuteReader();
-
-            List<Card> list = new List<Card>();
-            while(r.Read())
+            if(CopiedID.Equals(Guid.Empty))
             {
-                list.Add(new Card(r.GetString(0), r.GetString(1)));
+                new Exception();
             }
 
-            cmd = new("INSERT INTO sets (creator, name, set_id) VALUES (@user_id, @name, @set_id)", connection);
-            cmd.Parameters.AddWithValue("@user_id", toUser_id);
-            cmd.Parameters.AddWithValue("@name", toCopy.Name);
-            cmd.Parameters.AddWithValue("@set_id", toCopy.SetID);
-            cmd.ExecuteNonQuery();
+            List<Card> cards = GetCardsFromSet(CopiedID);
 
-            foreach(Card card in list)
+            foreach(Card card in cards)
             {
-                cmd = new("INSERT INTO flashcards (set_id, question, answer) VALUES (@set_id, @question, @answer)", connection);
-                cmd.Parameters.AddWithValue("@set_id", toCopy.SetID);
-                cmd.Parameters.AddWithValue("@question", card.Question);
-                cmd.Parameters.AddWithValue("@answer", card.Answer);
-                cmd.ExecuteNonQuery();
+                CreateCard(CopiedID, card.Question, card.Answer);
             }
-            
+
             return true;
         }
         catch (NpgsqlException e)
         {
-            Console.WriteLine($"Error in CopySetFromUser - ToFolder: {e.Message}");
+            Console.WriteLine($"Error in CopySetFromUser: {e.Message}");
+            return false;
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine($"Error in CopySetFromUser: The Guid is empty");
             return false;
         }
         finally

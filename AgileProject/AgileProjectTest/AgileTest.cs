@@ -132,6 +132,30 @@ public class AgileTest
     [Test]
     public void SetCopyTest()
     {
+        Guid user1 = Connection.ValidateUser("Guy 1", "Nassword");
+        Guid user2 = Connection.ValidateUser("bioiscool", "bioloGy1");
+        string originalName = "Set To Copy";
 
+        Assert.IsTrue(Connection.CreateSet(user1, originalName));
+
+        var set = (from s in Connection.GetSetsFromUser(user1) where s.Name == originalName select s).First();
+
+        Assert.IsTrue(set.Name.Equals(originalName));
+
+        Connection.CreateCard(set.SetID, "Copy Q", "Copy A");
+
+        Assert.IsTrue(Connection.CopySetFromUser(user2, set.SetID));
+
+        var newSet = from s in Connection.GetSetsFromUser(user2) where s.Name == originalName select s;
+
+        Assert.IsTrue(newSet.Count() > 1);
+
+        var Sets1 = from s in Connection.GetSetsFromUser(user1) select s;
+        var Sets2 = from s in Connection.GetSetsFromUser(user2) select s;
+
+        foreach(var s in Sets1)
+            Assert.IsTrue(Connection.DeleteSet(s.SetID));
+        foreach (var s in Sets2)
+            Assert.IsTrue(Connection.DeleteSet(s.SetID));
     }
 }
