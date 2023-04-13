@@ -224,6 +224,54 @@ public static class Connection
             Close();
         }
     }
+    public static bool CopySetFromUser(Guid toUser_id, Guid set_id, Guid folder_id)
+    {
+        try
+        {
+            Open();
+            //using NpgsqlCommand cmd = new("SELECT name FROM sets WHERE set_id = @set_id", connection);
+            using NpgsqlCommand cmd = new("INSERT INTO sets (name, creator, folder_id) " +
+                                          "SELECT name, @user_id, @folder_id FROM sets AS from_set " +
+                                          "WHERE set_id = @set_id " +
+                                          "RETURNING set_id", connection);
+            cmd.Parameters.AddWithValue("@set_id", set_id);
+            cmd.Parameters.AddWithValue("@user_id", toUser_id);
+            cmd.Parameters.AddWithValue("@folder_id", folder_id);
+            cmd.ExecuteNonQuery();
+            NpgsqlDataReader r = cmd.ExecuteReader();
+            r.Read();
+            Guid CopiedID = r.GetGuid(0);
+            Close();
+
+            if (CopiedID.Equals(Guid.Empty))
+            {
+                new Exception();
+            }
+
+            List<Card> cards = GetCardsFromSet(CopiedID);
+
+            foreach (Card card in cards)
+            {
+                CreateCard(CopiedID, card.Question, card.Answer);
+            }
+
+            return true;
+        }
+        catch (NpgsqlException e)
+        {
+            Console.WriteLine($"Error in CopySetFromUser - Folder addition: {e.Message}");
+            return false;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error in CopySetFromUser: The Guid is empty");
+            return false;
+        }
+        finally
+        {
+            Close();
+        }
+    }
     #endregion
     #region EditMethods
     public static void EditCard(Guid set_id, Guid card_id, string question, string answer)
