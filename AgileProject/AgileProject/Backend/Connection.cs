@@ -184,23 +184,14 @@ public static class Connection
             Open();
             //using NpgsqlCommand cmd = new("SELECT name FROM sets WHERE set_id = @set_id", connection);
             using NpgsqlCommand cmd = new("INSERT INTO sets (name, creator) " +
-                                          "SELECT name, @user_id FROM sets AS from_set " +
-                                          "WHERE set_id = @set_id " +
-                                          "RETURNING set_id; " +
+                                          "SELECT name, @user_id FROM sets " +
+                                          "WHERE set_id = @set_id; " +
                                           "INSERT INTO flashcards (set_id, question, answer) " +
                                           "SELECT @set_id, question, answer FROM flashcards AS from_cards " +
                                           "WHERE set_id = @set_id", connection);
             cmd.Parameters.AddWithValue("@set_id", from_set_id);
             cmd.Parameters.AddWithValue("@user_id", to_user_id);
             cmd.ExecuteNonQuery();
-            NpgsqlDataReader r = cmd.ExecuteReader();
-            r.Read();
-            Guid CopiedID = r.GetGuid(0);
-
-            if(CopiedID.Equals(Guid.Empty))
-            {
-                new Exception();
-            }
             return true;
         }
         catch (NpgsqlException e)
@@ -218,16 +209,15 @@ public static class Connection
             Close();
         }
     }
+
     public static bool CopySetFromSetID(Guid to_user_id, Guid from_set_id, Guid to_folder_id)
     {
         try
         {
             Open();
-            //using NpgsqlCommand cmd = new("SELECT name FROM sets WHERE set_id = @set_id", connection);
             using NpgsqlCommand cmd = new("INSERT INTO sets (name, creator, folder_id) " +
-                                          "SELECT name, @user_id, @folder_id FROM sets AS from_set " +
-                                          "WHERE set_id = @set_id " +
-                                          "RETURNING set_id; " +
+                                          "SELECT name, @user_id, @folder_id FROM sets " +
+                                          "WHERE set_id = @set_id; " +
                                           "INSERT INTO flashcards (set_id, question, answer) " +
                                           "SELECT @set_id, question, answer FROM flashcards AS from_cards " +
                                           "WHERE set_id = @set_id", connection);
@@ -235,15 +225,6 @@ public static class Connection
             cmd.Parameters.AddWithValue("@user_id", to_user_id);
             cmd.Parameters.AddWithValue("@folder_id", to_folder_id);
             cmd.ExecuteNonQuery();
-            NpgsqlDataReader r = cmd.ExecuteReader();
-            r.Read();
-            Guid CopiedID = r.GetGuid(0);
-            Close();
-
-            if (CopiedID.Equals(Guid.Empty))
-            {
-                new Exception();
-            }
 
             return true;
         }
@@ -262,6 +243,7 @@ public static class Connection
             Close();
         }
     }
+
     #endregion
     #region EditMethods
     public static void EditCard(Guid set_id, Guid card_id, string question, string answer)
